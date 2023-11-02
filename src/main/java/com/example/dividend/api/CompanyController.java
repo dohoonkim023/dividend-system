@@ -1,4 +1,4 @@
-package com.example.dividend.web;
+package com.example.dividend.api;
 
 import com.example.dividend.model.Company;
 import com.example.dividend.model.constants.CacheKey;
@@ -10,14 +10,18 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.stereotype.Controller;
 import org.springframework.util.ObjectUtils;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/company") //경로의 공통된 부분은 여길로 빼준다.
+@RequestMapping("/company")
 @AllArgsConstructor
 public class CompanyController {
 
@@ -29,7 +33,6 @@ public class CompanyController {
     public ResponseEntity<?> autocomplete(@RequestParam String keyword) {
         var result = this.companyService.getCompanyNamesByKeyword(keyword);
         return ResponseEntity.ok(result);
-
     }
 
     @GetMapping
@@ -48,7 +51,7 @@ public class CompanyController {
         }
 
         Company company = this.companyService.save(ticker);
-        this.companyService.addAutocompleteKeyword(company.getName()); //회사에 저장할때 마다 트라이에 저장이된다.
+        this.companyService.addAutocompleteKeyword(company.getName());
         return ResponseEntity.ok(company);
     }
 

@@ -10,7 +10,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Configuration
 public class AppConfig {
 
-    @Bean //싱글톤으로 사용하기 위해 빈으로 등록해준다.
+    @Bean
     public Trie<String, String> trie() {
         return new PatriciaTrie<>();
     }

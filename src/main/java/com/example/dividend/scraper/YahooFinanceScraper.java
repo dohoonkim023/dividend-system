@@ -4,21 +4,19 @@ import com.example.dividend.model.Company;
 import com.example.dividend.model.Dividend;
 import com.example.dividend.model.ScrapedResult;
 import com.example.dividend.model.constants.Month;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-
-@Component // 빈으로 사용할 것이기 때문
-public class YahooFinanceScraper implements Scraper{
+@Component
+public class YahooFinanceScraper implements Scraper {
 
     private static final String STATISTICS_URL = "https://finance.yahoo.com/quote/%s/history?period1=%d&period2=%d&interval=1mo";
     private static final String SUMMARY_URL = "https://finance.yahoo.com/quote/%s?p=%s";
@@ -30,20 +28,18 @@ public class YahooFinanceScraper implements Scraper{
         scrapedResult.setCompany(company);
 
         try {
-            //http connection을 맺고 document 인스턴스로 만들어준다.
-            long now = System.currentTimeMillis() / 1000; //현재 시간을 가져온다. , 밀리세컨드에서 초 단위로 바꾸기 위해 1000으로 나눠준다. -> 1970년 1월 1일부터 경과한 시간을 밀리세컨드로 가져온 값
+            long now = System.currentTimeMillis() / 1000;
 
             String url = String.format(STATISTICS_URL, company.getTicker(), START_TIME, now);
             Connection connection = Jsoup.connect(url);
             Document document = connection.get();
 
-            Elements parsingDivs = document.getElementsByAttributeValue("data-test", "historical-prices");
+            Elements parsingDivs = document.getElementsByAttributeValue(
+                "data-test",
+                "historical-prices"
+            );
             Element tableEle = parsingDivs.get(0);
-
             Element tbody = tableEle.children().get(1);
-
-            //tbody 내 모든 데이터를 순회한다.
-            //우리는 배당금 데이터만 가져오고 싶다.
 
             List<Dividend> dividends = new ArrayList<>();
             for (Element e : tbody.children()) {
@@ -58,7 +54,7 @@ public class YahooFinanceScraper implements Scraper{
                 int year = Integer.valueOf(splits[2]);
                 String dividend = splits[3];
 
-                if (month < 0) {
+                if (month < 0) { //Todo:매직넘버 수정하기
                     throw new RuntimeException("Unexpected Month enum value ->" + splits[0]);
                 }
 
@@ -69,7 +65,6 @@ public class YahooFinanceScraper implements Scraper{
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
         return scrapedResult;
     }
 

@@ -3,7 +3,7 @@ package com.example.dividend.scraper;
 import com.example.dividend.model.Company;
 import com.example.dividend.model.ScrapedResult;
 
-public class NaverFinanceScraper implements Scraper{
+public class NaverFinanceScraper implements Scraper {
 
     @Override
     public Company scrapCompanyByTicker(String sticker) {

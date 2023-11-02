@@ -7,12 +7,13 @@ import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 
 @Configuration
 public class SchedulerConfig implements SchedulingConfigurer {
+
     @Override
     public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
         ThreadPoolTaskScheduler threadPool = new ThreadPoolTaskScheduler();
 
-        int n = Runtime.getRuntime().availableProcessors(); // 코어 갯수를 가져온다.
-        threadPool.setPoolSize(n);
+        int CoreNumbers = Runtime.getRuntime().availableProcessors();
+        threadPool.setPoolSize(CoreNumbers);
         threadPool.initialize();
 
         taskRegistrar.setTaskScheduler(threadPool);
