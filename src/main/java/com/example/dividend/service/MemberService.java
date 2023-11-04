@@ -27,18 +27,18 @@ public class MemberService implements UserDetailsService {
     }
 
     public MemberEntity register(Auth.SignUp member) {
-        boolean exists = this.memberRepository.existsByUsername(member.getUsername());
+        boolean exists = memberRepository.existsByUsername(member.getUsername());
         if (exists) {
             throw new AlreadyExistUserException();
         }
 
-        member.setPassword(this.passwordEncoder.encode(member.getPassword()));
+        member.setPassword(passwordEncoder.encode(member.getPassword()));
         return this.memberRepository.save(member.toEntity());
     }
 
     public MemberEntity authenticate(Auth.SignIn member) {
 
-        var user = this.memberRepository.findByUsername(member.getUsername())
+        var user = memberRepository.findByUsername(member.getUsername())
             .orElseThrow(() -> new RuntimeException("존재하지 않는 ID 입니다."));
 
         if (!this.passwordEncoder.matches(member.getPassword(), user.getPassword())) {

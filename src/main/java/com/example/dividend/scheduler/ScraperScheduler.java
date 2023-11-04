@@ -32,19 +32,19 @@ public class ScraperScheduler {
     public void yahooFinanceScheduler() {
         log.info("scraping scheduler is started");
 
-        List<CompanyEntity> companies = this.companyRepository.findAll();
+        List<CompanyEntity> companies = companyRepository.findAll();
 
         for (var company : companies) {
             log.info("scraping scheduler is started -> " + company.getName());
-            ScrapedResult scrapedResult = this.yahooFinanceScraper.scrap(
+            ScrapedResult scrapedResult = yahooFinanceScraper.scrap(
                 new Company(company.getTicker(), company.getName()));
             scrapedResult.getDividends().stream()
                 .map(e -> new DividendEntity(company.getId(), e))
                 .forEach(e -> {
-                    boolean exists = this.dividendRepository.existsByCompanyIdAndDate(
+                    boolean exists = dividendRepository.existsByCompanyIdAndDate(
                         e.getCompanyId(), e.getDate());
                     if (!exists) {
-                        this.dividendRepository.save(e);
+                        dividendRepository.save(e);
                         log.info("insert new dividend -> " + e.toString());
                     }
                 });

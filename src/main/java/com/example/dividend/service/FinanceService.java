@@ -28,19 +28,20 @@ public class FinanceService {
     public ScrapedResult getDividendByCompanyName(String companyName) {
         log.info("search company -> " + companyName);
 
-        CompanyEntity company = this.companyRepository.findByName(companyName)
+        CompanyEntity company = companyRepository.findByName(companyName)
             .orElseThrow(() -> new RuntimeException(new NoCompanyException()));
 
-        List<DividendEntity> dividendEntities = this.dividendRepository
+        List<DividendEntity> dividendEntities = dividendRepository
             .findAllByCompanyId(company.getId());
 
         List<Dividend> dividends = dividendEntities.stream()
             .map(e -> new Dividend(e.getDate(), e.getDividend()))
             .collect(Collectors.toList());
 
-        return new ScrapedResult(new Company(
-            company.getTicker(),
-            company.getName()),
+        return new ScrapedResult(Company.builder()
+            .ticker(company.getTicker())
+            .name(company.getName())
+            .build(),
             dividends
         );
     }

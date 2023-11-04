@@ -30,26 +30,26 @@ public class CompanyService {
 
     public Company save(String ticker) {
 
-        boolean exits = this.companyRepository.existsByTicker(ticker);
+        boolean exits = companyRepository.existsByTicker(ticker);
         if (exits) {
             throw new RuntimeException("already exits ticker -> " + ticker);
         }
-        return this.storeCompanyAndDividend(ticker);
+        return storeCompanyAndDividend(ticker);
     }
 
     public Page<CompanyEntity> getAllCompany(Pageable pageable) {
-        return this.companyRepository.findAll(pageable);
+        return companyRepository.findAll(pageable);
     }
 
     private Company storeCompanyAndDividend(String ticker) {
-        Company company = this.yahooFinanceScraper.scrapCompanyByTicker(ticker);
+        Company company = yahooFinanceScraper.scrapCompanyByTicker(ticker);
         if (ObjectUtils.isEmpty(company)) {
             throw new RuntimeException("failed to scrap ticker -> " + ticker);
         }
 
-        ScrapedResult scrapedResult = this.yahooFinanceScraper.scrap(company);
+        ScrapedResult scrapedResult = yahooFinanceScraper.scrap(company);
 
-        CompanyEntity companyEntity = this.companyRepository.save(new CompanyEntity(company));
+        CompanyEntity companyEntity = companyRepository.save(new CompanyEntity(company));
         List<DividendEntity> dividendEntities = scrapedResult.getDividends().stream()
             .map(e -> DividendEntity.builder()
                 .companyId(companyEntity.getId())
@@ -63,7 +63,7 @@ public class CompanyService {
 
     public List<String> getCompanyNamesByKeyword(String keyword) {
         Pageable limit = PageRequest.of(0, 10);
-        Page<CompanyEntity> companyEntities = this.companyRepository
+        Page<CompanyEntity> companyEntities = companyRepository
             .findByNameStartingWithIgnoreCase(
                 keyword,
                 limit
@@ -87,13 +87,13 @@ public class CompanyService {
     }
 
     public String deleteCompany(String ticker) {
-        var company = this.companyRepository.findByTicker(ticker)
+        var company = companyRepository.findByTicker(ticker)
             .orElseThrow(() -> new RuntimeException(new NoCompanyException()));
 
-        this.dividendRepository.deleteAllByCompanyId(company.getId());
-        this.companyRepository.delete(company);
+        dividendRepository.deleteAllByCompanyId(company.getId());
+        companyRepository.delete(company);
 
-        this.deleteAutocompleteKeyword(company.getName());
+        deleteAutocompleteKeyword(company.getName());
         return company.getName();
     }
 }

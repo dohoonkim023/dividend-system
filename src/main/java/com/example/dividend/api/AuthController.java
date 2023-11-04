@@ -23,14 +23,14 @@ public class AuthController {
 
     @PostMapping("/signup")
     public ResponseEntity<?> signup(@RequestBody Auth.SignUp request) {
-        var result = this.memberService.register(request);
+        var result = memberService.register(request);
         return ResponseEntity.ok(request);
     }
 
     @PostMapping("/signin")
     public ResponseEntity<?> signin(@RequestBody Auth.SignIn request) {
-        var member = this.memberService.authenticate(request);
-        var token = this.tokenProvider.generateToken(member.getUsername(), member.getRoles());
+        var member = memberService.authenticate(request);
+        var token = tokenProvider.generateToken(member.getUsername(), member.getRoles());
         log.info("user login -> " + request.getUsername());
         return ResponseEntity.ok(token);
     }

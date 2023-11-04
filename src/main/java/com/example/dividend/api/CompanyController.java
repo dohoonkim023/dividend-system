@@ -31,14 +31,14 @@ public class CompanyController {
 
     @GetMapping("/autocomplete")
     public ResponseEntity<?> autocomplete(@RequestParam String keyword) {
-        var result = this.companyService.getCompanyNamesByKeyword(keyword);
+        var result = companyService.getCompanyNamesByKeyword(keyword);
         return ResponseEntity.ok(result);
     }
 
     @GetMapping
     @PreAuthorize("hasRole('READ')")
     public ResponseEntity<?> searchCompany(final Pageable pageable) {
-        Page<CompanyEntity> companies = this.companyService.getAllCompany(pageable);
+        Page<CompanyEntity> companies = companyService.getAllCompany(pageable);
         return ResponseEntity.ok(companies);
     }
 
@@ -50,20 +50,20 @@ public class CompanyController {
             throw new RuntimeException("ticker is empty");
         }
 
-        Company company = this.companyService.save(ticker);
-        this.companyService.addAutocompleteKeyword(company.getName());
+        Company company = companyService.save(ticker);
+        companyService.addAutocompleteKeyword(company.getName());
         return ResponseEntity.ok(company);
     }
 
     @DeleteMapping(value = "/{ticker}")
     @PreAuthorize("hasRole('WRITE')")
     public ResponseEntity<?> deleteCompany(@PathVariable String ticker) {
-        String companyName = this.companyService.deleteCompany(ticker);
-        this.clearFinanceCache(companyName);
+        String companyName = companyService.deleteCompany(ticker);
+        clearFinanceCache(companyName);
         return ResponseEntity.ok(companyName);
     }
 
-    public void clearFinanceCache(String companyName) {
-        this.redisCacheManager.getCache(CacheKey.KEY_FINANCE).evict(companyName);
+    private void clearFinanceCache(String companyName) {
+        redisCacheManager.getCache(CacheKey.KEY_FINANCE).evict(companyName);
     }
 }
