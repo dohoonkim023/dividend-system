@@ -37,20 +37,30 @@ public class ScraperScheduler {
         for (var company : companies) {
             log.info("scraping scheduler is started -> " + company.getName());
             ScrapedResult scrapedResult = yahooFinanceScraper.scrap(
-                new Company(company.getTicker(), company.getName()));
+                Company.builder()
+                    .ticker(company.getTicker())
+                    .name(company.getName())
+                    .build()
+            );
+
             scrapedResult.getDividends().stream()
-                .map(e -> new DividendEntity(company.getId(), e))
+                .map(e -> DividendEntity.builder()
+                    .companyId(company.getId())
+                    .dividend(e)
+                    .build())
                 .forEach(e -> {
                     boolean exists = dividendRepository.existsByCompanyIdAndDate(
-                        e.getCompanyId(), e.getDate());
+                        e.getCompanyId(),
+                        e.getDate()
+                    );
                     if (!exists) {
                         dividendRepository.save(e);
-                        log.info("insert new dividend -> " + e.toString());
+                        log.info("insert new dividend -> " + e);
                     }
                 });
 
             try {
-                Thread.sleep(3000); // 3 seconds
+                Thread.sleep(3000);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }
