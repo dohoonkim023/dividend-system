@@ -52,6 +52,8 @@ public class YahooFinanceScraper implements Scraper {
                 int month = Month.strToNumber(splits[0]);
                 int day = Integer.valueOf(splits[1].replace(",", ""));
                 int year = Integer.valueOf(splits[2]);
+                int hour = 0;
+                int min = 0;
                 String dividend = splits[3];
 
                 if (month < 0) { //Todo:매직넘버 수정하기
@@ -59,7 +61,7 @@ public class YahooFinanceScraper implements Scraper {
                 }
 
                 dividends.add(Dividend.builder().
-                    date(LocalDateTime.of(year, month, day, 0, 0))
+                    date(LocalDateTime.of(year, month, day, hour, min))
                     .dividend(dividend)
                     .build()
                 );
