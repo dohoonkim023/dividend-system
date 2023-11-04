@@ -50,7 +50,7 @@ public class TokenProvider {
     }
 
     public Authentication getAuthentication(String jwt) {
-        UserDetails userDetails = this.memberService.loadUserByUsername(this.getUsername(jwt));
+        UserDetails userDetails = memberService.loadUserByUsername(this.getUsername(jwt));
         return new UsernamePasswordAuthenticationToken(
             userDetails,
             "",
@@ -59,7 +59,7 @@ public class TokenProvider {
     }
 
     public String getUsername(String token) {
-        return this.parseClaims(token).getSubject();
+        return parseClaims(token).getSubject();
     }
 
     public boolean validateToken(String token) {
