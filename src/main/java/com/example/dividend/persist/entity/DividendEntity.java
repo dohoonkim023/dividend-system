@@ -8,6 +8,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -35,6 +36,7 @@ public class DividendEntity {
 
     private String dividend;
 
+    @Builder
     public DividendEntity(Long companyId, Dividend dividend) {
         this.companyId = companyId;
         this.date = dividend.getDate();

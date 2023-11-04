@@ -51,7 +51,10 @@ public class CompanyService {
 
         CompanyEntity companyEntity = this.companyRepository.save(new CompanyEntity(company));
         List<DividendEntity> dividendEntities = scrapedResult.getDividends().stream()
-            .map(e -> new DividendEntity(companyEntity.getId(), e))
+            .map(e -> DividendEntity.builder()
+                .companyId(companyEntity.getId())
+                .dividend(e)
+                .build())
             .collect(Collectors.toList());
 
         this.dividendRepository.saveAll(dividendEntities);
@@ -75,8 +78,7 @@ public class CompanyService {
     }
 
     public List<String> autocomplete(String keyword) {
-        return (List<String>) this.trie.prefixMap(keyword).keySet()
-            .stream()
+        return (List<String>) this.trie.prefixMap(keyword).keySet().stream()
             .collect(Collectors.toList());
     }
 
